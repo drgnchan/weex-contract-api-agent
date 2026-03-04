@@ -142,11 +142,9 @@ class WeexContractClient:
             missing.append("WEEX_API_PASSPHRASE")
         if missing:
             raise SystemExit(
-                "Missing private API credentials: " + ", ".join(missing)
+                "Missing private API credentials in environment. "
+                "Set these vars and retry: " + ", ".join(missing)
             )
-
-    def _has_auth_credentials(self) -> bool:
-        return bool(self.api_key and self.api_secret and self.api_passphrase)
 
     def _sign(self, timestamp_ms: str, method: str, path: str, query_string: str, body_str: str) -> str:
         # Per WEEX docs, message = timestamp + method + requestPath + (?queryString) + body
@@ -166,7 +164,6 @@ class WeexContractClient:
         endpoint: Endpoint,
         query: Optional[Dict[str, Any]] = None,
         body: Optional[Dict[str, Any]] = None,
-        allow_missing_auth: bool = False,
     ) -> Dict[str, Any]:
         method = endpoint.method.upper()
         q = query or {}
@@ -182,25 +179,13 @@ class WeexContractClient:
         }
 
         if endpoint.auth:
+            self._require_auth()
             timestamp_ms = str(int(time.time() * 1000))
-            if self._has_auth_credentials():
-                sign = self._sign(timestamp_ms, method, endpoint.path, query_string, body_str)
-                key = self.api_key
-                passphrase = self.api_passphrase
-            elif allow_missing_auth:
-                sign = "MISSING_CREDENTIALS"
-                key = self.api_key or "MISSING_CREDENTIALS"
-                passphrase = self.api_passphrase or "MISSING_CREDENTIALS"
-            else:
-                self._require_auth()
-                # Unreachable, but keeps type checkers and linters happy.
-                sign = ""
-                key = ""
-                passphrase = ""
+            sign = self._sign(timestamp_ms, method, endpoint.path, query_string, body_str)
             headers.update(
                 {
-                    "ACCESS-KEY": key,
-                    "ACCESS-PASSPHRASE": passphrase,
+                    "ACCESS-KEY": self.api_key,
+                    "ACCESS-PASSPHRASE": self.api_passphrase,
                     "ACCESS-TIMESTAMP": timestamp_ms,
                     "ACCESS-SIGN": sign,
                 }
@@ -294,7 +279,6 @@ def execute_endpoint(
         endpoint,
         query=query,
         body=body,
-        allow_missing_auth=dry_run,
     )
     if dry_run:
         preview = {
@@ -554,9 +538,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--base-url", default=os.getenv("WEEX_API_BASE", DEFAULT_BASE_URL))
     parser.add_argument("--locale", default=os.getenv("WEEX_LOCALE", DEFAULT_LOCALE))
     parser.add_argument("--timeout", type=float, default=float(os.getenv("WEEX_API_TIMEOUT", DEFAULT_TIMEOUT)))
-    parser.add_argument("--api-key", default=os.getenv("WEEX_API_KEY"))
-    parser.add_argument("--api-secret", default=os.getenv("WEEX_API_SECRET"))
-    parser.add_argument("--api-passphrase", default=os.getenv("WEEX_API_PASSPHRASE"))
 
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -623,9 +604,9 @@ def main() -> int:
         base_url=args.base_url,
         timeout=args.timeout,
         locale=args.locale,
-        api_key=args.api_key,
-        api_secret=args.api_secret,
-        api_passphrase=args.api_passphrase,
+        api_key=os.getenv("WEEX_API_KEY"),
+        api_secret=os.getenv("WEEX_API_SECRET"),
+        api_passphrase=os.getenv("WEEX_API_PASSPHRASE"),
     )
 
     if args.command == "list-endpoints":
