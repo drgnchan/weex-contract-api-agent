@@ -1,6 +1,8 @@
 ---
 name: weex-contract-api-agent
 description: Use when the user wants WEEX futures (contract) API automation via REST, including direct order execution from natural language, order cancel/query, and market/account data retrieval.
+metadata:
+  version: "1.1.0"
 ---
 
 # WEEX Contract API Agent
@@ -50,8 +52,20 @@ python3 scripts/weex_contract_api.py place-order-from-text --text "<original use
 - Use `--dry-run` first.
 - If instruction is ambiguous or missing fields, ask only for missing fields.
 
+## Updates
+
+Publish updates as GitHub Releases with asset `weex-contract-api-agent.skill`.
+
+Users can check/apply updates:
+
+```bash
+python3 scripts/skill_update.py check --repo <owner>/<repo>
+python3 scripts/skill_update.py update --repo <owner>/<repo>
+```
+
 ## References
 
 - `references/contract-endpoints.md`
 - `references/auth-and-signing.md`
 - `references/websocket.md`
+- `references/updates.md`
