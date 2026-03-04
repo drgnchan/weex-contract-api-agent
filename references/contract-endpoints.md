@@ -1,5 +1,9 @@
 # WEEX Contract Endpoints (Compact)
 
+Primary local definitions (inside this skill):
+- `references/contract-api-definitions.json`
+- `references/contract-api-definitions.md`
+
 Docs root:
 - https://www.weex.com/api-doc/contract/log/changelog
 

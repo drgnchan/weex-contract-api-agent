@@ -65,6 +65,8 @@ python3 scripts/skill_update.py update --repo <owner>/<repo>
 
 ## References
 
+- `references/contract-api-definitions.json` (machine-readable local interface definitions)
+- `references/contract-api-definitions.md` (human-readable local interface definitions)
 - `references/contract-endpoints.md`
 - `references/auth-and-signing.md`
 - `references/websocket.md`
