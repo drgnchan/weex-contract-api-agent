@@ -1,13 +1,14 @@
 ---
 name: weex-contract-api-agent
-description: Use when the user wants WEEX futures (contract) API automation via REST, including direct order execution from natural language, order cancel/query, and market/account data retrieval.
+description: Use when the user wants WEEX contract API automation via REST, including direct order execution from natural language, order cancel/query, and market/account data retrieval.
 metadata:
-  version: "1.1.0"
+  version: "2.0.0"
 ---
 
 # WEEX Contract API Agent
 
-Use `scripts/weex_contract_api.py`.
+Use:
+- `scripts/weex_contract_api.py` for contract only
 
 For private endpoints:
 
